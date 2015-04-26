@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <meta name="viewport" content="user-scalable=no, initial-scale=3, maximum-scale=3, minimum-scale=3, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+
+    <preference name="orientation" value="landscape" />
+    <preference name="fullscreen" value="true" />
+    
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+
+	<title>Jogo HTML</title>
+
+	<style>
+		canvas 
+		{
+			position: absolute;
+			top: 0px;
+			bottom: 0px;
+			left: 0px;
+			right: 0px;
+			margin: auto;
+		}
+	</style>
+</head>
+<!--<body style="background-image: url('assets/img/aurora-borealis.png')">
+<body style="background: #9eddf2">-->
+<body style="background-image: url('assets/img/mountains.gif')">
+	
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+
+<!-- autoplay -->
+<audio controls loop hidden id="musica">
+	<source src="assets/sound/05-mb-stage-theme-2.mp3" type="audio/mpeg">
+</audio>
+
+<audio controls hidden id="jump">
+	<source src="assets/sound/mario-jump-sound.mp3" type="audio/mpeg">
+</audio>
+
+<audio controls hidden id="die">
+	<source src="assets/sound/player-down.mp3" type="audio/mpeg">
+</audio>
+
+	<div style="display:none;">
+		<img id="personagem_andando" src="assets/img/eremita_andando.png" width="55" height="100">
+		<img id="personagem_parado" src="assets/img/eremita_parado.png" width="55" height="100">
+		<img id="personagem_pulando" src="assets/img/eremita_pulando.png" width="65" height="90">
+		<img id="personagem_caindo" src="assets/img/marioJump2.png" width="32" height="44">
+		<img id="iceberg1" src="assets/img/iceberg1.gif" width="100" height="321">
+		<img id="iceberg2" src="assets/img/iceberg2.gif" width="100" height="215">
+		<img id="iceberg3" src="assets/img/iceberg3.gif" width="100" height="273">
+		<img id="chao_cima" src="assets/img/chao_cima_azul.png" width="32" height="44">
+		<img id="chao_borda_esquerda" src="assets/img/chao_borda_esquerda.png" width="32" height="32">
+		<img id="chao_borda_direita" src="assets/img/chao_borda_direita.png" width="32" height="32">
+		<img id="chao_esquerda" src="assets/img/chao_esquerda.png" width="32" height="32">
+		<img id="chao_direita" src="assets/img/chao_direita.png" width="32" height="32">
+		<img id="chao_dentro" src="assets/img/chao_dentro_azul.png" width="32" height="32">
+	</div>
+<script>
+		var canvas, ctx, ALTURA, LARGURA, frames = 0, maxJump = 3, velocidade = 20,
+		currentState, record,
+
+		state =
+		{
+			play: 0,
+			playing: 1,
+			lose: 2
+		},
+
+		sound =
+		{
+			jump: document.getElementById('jump'), 
+			music: document.getElementById('musica'), 
+			die: document.getElementById('die'),
+
+			configure: function()
+			{
+				this.jump.volume = 0.1;
+				this.music.volume = 0.3;
+				this.die.volume = 0.1;
+			},
+
+			reset: function()
+			{
+				this.jump.pause();
+				this.jump.currentTime = 1;
+
+				this.music.pause();
+				this.music.currentTime = 1;
+				
+				this.die.pause();
+				this.die.currentTime = 1;
+			}
+			
+		},
+
+		chao = 
+		{
+			y: 600,
+			altura: 50,
+			cor: "#9dd1e4",
+			count: 0,
+
+			draw: function()
+			{
+				this.drawGround();
+				ctx.fillStyle = this.cor;
+				ctx.fillRect(0, this.y + 64, LARGURA, ALTURA - 600);
+			},
+
+			drawGround: function()
+			{
+				if(this.count == 50)
+				{
+					this.count = 0;
+				}
+				this.count += 5;
+				var i = 0;
+				while(i < LARGURA + this.count)
+				{
+					ctx.drawImage(document.getElementById('chao_cima'), i - this.count, this.y);
+					ctx.drawImage(document.getElementById('chao_dentro'), i - this.count, this.y + 32);
+					
+					i += 32;
+					this.pronto = true;
+				}
+			}
+
+		},
+
+		personagem = 
+		{
+			x: 50,
+			y: 0,
+			altura: 100,
+			largura: 55,
+			cor: "#666666",
+			/*gravidade: 1.6,*/
+			gravidade: 2,
+			velocidade: 0,
+			forcaPulo: 23.6,
+			quantJump: 0,
+			andando: false,
+			imagem: false,
+			passos_count: 0,
+			score: 0,
+
+			update: function()
+			{
+				this.velocidade += this.gravidade;
+				this.y += this.velocidade;
+
+				if(this.y > chao.y - this.altura && currentState != state.lose)
+				{
+					this.altura = 100;
+					this.largura = 55;
+					this.y = chao.y - this.altura;
+					this.quantJump = 0;
+					this.velocidade = 0;
+
+					if(!this.andando)
+					{
+						this.imagem = document.getElementById('personagem_andando');
+						this.passos_count++;
+						if(this.passos_count == 3)
+						{
+							this.andando = true;
+							this.passos_count = 0;							
+						}
+					}
+					else
+					{
+						this.imagem = document.getElementById('personagem_parado');
+						this.passos_count++;
+						if(this.passos_count == 3)
+						{
+							this.andando = false;
+							this.passos_count = 0;							
+						}
+					}
+				}
+				/*
+				else
+				{
+					this.imagem = document.getElementById('personagem_caindo');
+				}
+				*/
+			},
+
+			jump: function()
+			{
+				if(this.quantJump < maxJump)
+				{
+					this.altura = 90;
+					this.largura = 65;
+					this.velocidade = - this.forcaPulo;
+					this.quantJump++;
+
+					this.imagem = document.getElementById('personagem_pulando');
+					
+					//document.getElementById('jump').play();
+					sound.jump.currentTime = 0;
+					sound.jump.play();
+				}
+			},
+
+			reset: function()
+			{
+				this.velocidade = 0;
+				this.y = 0;
+
+				if(this.score > record)
+				{
+					localStorage.setItem("record", this.score);
+					record = this.score;
+				}
+
+				this.score = 0;
+			},
+
+			draw: function()
+			{
+				if (!this.imagem)
+				{
+					this.imagem = document.getElementById('personagem_parado');
+				}
+
+				ctx.drawImage(this.imagem,this.x,this.y);
+				/*
+				ctx.fillStyle = this.cor;
+				ctx.fillRect(this.x, this.y, this.largura, this.altura);
+				*/
+			}
+
+		},
+
+		obstaculos = 
+		{
+			_obs: [],
+			cores: ["#174478","#174478","#174478"],
+			images: [document.getElementById('iceberg1'), document.getElementById('iceberg2'), document.getElementById('iceberg3')],
+			insertTime: 0,
+			passou: false,
+
+			insert: function()
+			{
+				this._obs.push({
+					x: LARGURA,
+					//largura: 30 + Math.floor(21 * Math.random()),
+					largura: 50,
+					altura: 30 + Math.floor(200 * Math.random()),
+					//cor: this.cores[Math.floor(1 * Math.random())]
+					image: this.images[Math.floor(3 * Math.random())]
+				});
+
+				this.insertTime = 20 + Math.floor(21 * Math.random());
+			},
+
+			update: function()
+			{
+				if(this.insertTime == 0)
+				{
+					this.insert();
+				}
+				else
+				{
+					this.insertTime--;
+				}
+
+				for (var i = 0, tam = this._obs.length; i < tam; i++) {
+					var obs = this._obs[i];
+					
+					obs.x -= velocidade;
+
+					if (personagem.x < obs.x + obs.largura && personagem.x + personagem.largura >= obs.x && personagem.y + personagem.altura >= chao.y - obs.altura)
+					{
+						currentState = state.lose;
+
+						sound.reset();
+						sound.die.play();
+					}
+					else if(obs.x < personagem.x && !obs.passou)
+					{
+						personagem.score++;
+						obs.passou = true;
+					}
+					else if(obs.x <= -obs.largura)
+					{
+						this._obs.splice(i, 1);
+						tam--;
+						i--;
+					}
+				};
+			},
+
+			clear: function()
+			{
+				this._obs = [];
+			},
+
+			draw: function()
+			{
+				for (var i = 0, tam = this._obs.length; i < tam; i++) {
+					var obs = this._obs[i];
+					/*
+					ctx.fillStyle = obs.cor;
+					ctx.fillRect(obs.x, chao.y - obs.altura, obs.largura, obs.altura);
+					*/
+					ctx.drawImage(obs.image, obs.x - 30, chao.y - obs.altura);
+				};
+			}
+		};
+
+		function click(event)
+		{
+			if (currentState == state.playing)
+			{
+				personagem.jump();
+			}
+			else if (currentState == state.play) 
+			{
+				currentState = state.playing;
+				sound.music.play();
+			}
+			else if (currentState == state.lose && personagem.y >= 2 * ALTURA)
+			{
+				currentState = state.play;
+				obstaculos.clear();
+				personagem.reset();
+			}
+		}
+
+		function main()
+		{
+			ALTURA = window.innerHeight;
+			LARGURA = window.innerWidth;
+/*
+			if(LARGURA >= 500)
+			{
+				LARGURA = 1000;
+				ALTURA = 600;
+			}
+*/
+			canvas = document.createElement("canvas");
+			canvas.width = LARGURA;
+			canvas.height = ALTURA;
+			canvas.style.border = "1px solid #666666";
+
+			ctx = canvas.getContext("2d");
+			document.body.appendChild(canvas);
+			document.addEventListener("mousedown", click);
+
+			sound.configure();
+			
+			currentState = state.play;
+
+			record = localStorage.getItem("record");
+
+			if (record == null)
+			{
+				record = 0;
+			}
+
+
+
+			run();	
+		}
+		
+		function run()
+		{
+			update();
+			draw();
+
+			setTimeout(function(){
+				window.requestAnimationFrame(run);
+			}, 4);
+		}
+		
+		function update()
+		{
+			frames++;
+			personagem.update();
+
+			if(currentState == state.playing)
+			{
+				obstaculos.update();
+			}
+		}
+		
+		function draw()
+		{
+			ctx.fillStyle = "#EAF1F9";
+			//ctx.fillRect(0, 0, LARGURA, 600);
+			ctx.clearRect ( 0 , 0 , LARGURA, ALTURA );
+			
+			ctx.fillStyle = "#FFFFFF";
+			ctx.font = "bold 50px Verdana";
+			ctx.fillText(personagem.score, 30, 68);
+
+			if(currentState == state.play)
+			{
+				
+				frames = 0;
+				ctx.fillStyle = "#B7D4F4";
+				ctx.fillRect(LARGURA / 2 - 100, ALTURA / 2 - 50, 200, 100);
+
+				ctx.save();
+				ctx.translate(LARGURA / 2, ALTURA / 2);
+				ctx.fillStyle = "#156D9C";
+				ctx.fillText("Jogar!", -85, 19);
+				ctx.restore();
+
+			}
+			else if (currentState == state.lose)
+			{
+				ctx.fillStyle = "#FFADAD";
+				ctx.fillRect(LARGURA / 2 - 100, ALTURA / 2 - 50, 200, 100);
+				
+				ctx.save();
+				ctx.translate(LARGURA / 2, ALTURA / 2);
+				ctx.fillStyle = "#156D9C";
+
+				if (personagem.score > record)
+				{
+					ctx.fillText("Novo Record!", -150, -65);
+				}
+				else if(record < 10)
+				{
+					ctx.fillText("Record " + record, -120, -65);
+				}
+				else if(record < 100)
+				{
+					ctx.fillText("Record " + record, -130, -65);
+				}
+				else
+				{
+					ctx.fillText("Record " + record, -150, -65);
+				}
+
+				if (personagem.score < 10)
+				{
+					ctx.fillText(personagem.score, -18, 19);
+				}
+				else if (personagem.score < 100)
+				{
+					ctx.fillText(personagem.score, -31, 19);
+				}
+				else 
+				{
+					ctx.fillText(personagem.score, -44, 19);
+				}
+
+				chao.pronto = false;
+				ctx.restore();
+
+				//chao.draw();
+
+			}
+			else if (currentState == state.playing)
+			{
+				obstaculos.draw();
+				ctx.fillText(frames, LARGURA - 120, 65);
+			}
+
+			chao.draw();
+			personagem.draw();
+		}
+
+		main();
+	</script>
+</body>
+</html>
