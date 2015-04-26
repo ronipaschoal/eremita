@@ -81,13 +81,13 @@
 			left: 50px;
 		}
 
-		#record
+		#menu_title
 		{
 			top: 0px;
 			bottom: 150px;
 			left: 0px;
 			right: 0px;
-			width: 500px;
+			width: 800px;
 			height: 140px;
 			margin: auto;
 			text-align: center;
@@ -101,8 +101,10 @@
 			left: 0px;
 			right: 0px;
 			width: 250px;
-			height: 150px;
+			height: 100px;
 			margin: auto;
+			border: solid 1px #000000;
+			cursor: pointer;
 		}
 
 		#score
@@ -126,6 +128,13 @@
 			background: #FFADAD;
 		}
 
+		.menu_info
+		{
+			margin-top: 10px;
+			width: 250px;
+
+		}
+
 	</style>
 
 </head>
@@ -133,7 +142,7 @@
 	<div id="context">
 		<div id="test" style="top: 10px; left: 900px;"></div>
 		<div id="score"></div>
-		<div id="record">teste</div>
+		<div id="menu_title"></div>
 		<div id="menu"></div>
 		<div id="personagem">
 			<img id="personagem_parado" src="assets/img/eremita_parado.png" width="72" height="103">
@@ -161,9 +170,9 @@
 <script>
 //document.getElementById('test').innerHTML = this.andando;
 		var canvas, ctx, ALTURA, LARGURA, LARGURA_TOTAL, frames = 0, maxJump = 3, velocidade = 20,
-		currentState, record,
+		currentState, record, KEY_PRESSED = false;
 		score = document.getElementById('score'),
-		menu_record = document.getElementById('record'),
+		menu_title = document.getElementById('menu_title'),
 		menu = document.getElementById('menu'),
 
 		state =
@@ -266,24 +275,17 @@
 					{
 						this.movimento = !this.movimento;
 						this.passos_count = 0;
-						((currentState == state.playing) && !this.movimento) ? this.walk() : this.stop();					
+						((currentState == state.playing) && !this.movimento) ? this.changeStatus("andando") : this.changeStatus("parado");					
 					}
 				}
 				
 			},
 
-			stop: function()
+			changeStatus: function(option)
 			{
-				this.pulando.className = "hidden";
-				this.andando.className = "hidden";
-				this.parado.className = "";
-			},
-
-			walk: function()
-			{
-				this.pulando.className = "hidden";
-				this.parado.className = "hidden";
-				this.andando.className = "";
+				this.pulando.className = (option == "pulando") ? "" : "hidden";
+				this.andando.className = (option == "andando") ? "" : "hidden";
+				this.parado.className  = (option == "parado") ? "" : "hidden";
 			},
 
 			jump: function()
@@ -294,9 +296,7 @@
 					this.velocidade = - this.forcaPulo;
 					this.quantJump++;
 
-					this.andando.className = "hidden";
-					this.parado.className = "hidden";
-					this.pulando.className = "";
+					this.changeStatus("pulando");
 					
 					sound.jump.currentTime = 0;
 					sound.jump.play();
@@ -307,6 +307,8 @@
 			{
 				this.velocidade = 0;
 				this.y = 0;
+
+				this.changeStatus("parado");
 
 				if(this.score > record)
 				{
@@ -332,7 +334,7 @@
 				this._obs.push({
 					x: LARGURA,
 					largura: 50,
-					altura: 30 + Math.floor(180 * Math.random()),
+					altura: 40 + Math.floor(180 * Math.random()),
 					image: this.images[Math.floor(3 * Math.random())]
 				});
 
@@ -360,7 +362,7 @@
 
 					/*cima ---- | frente ][ | altura */
 					//if (personagem.x < obs.x + obs.largura && personagem.x + personagem.largura >= obs.x && personagem.y + personagem.altura >= chao.y - obs.altura)
-					if ((personagem.x < obs.x) && ((personagem.x + personagem.largura) >= obs.x) && ((personagem.y + personagem.altura - 10) >= (chao.y - obs.altura)))
+					if ((personagem.x < obs.x) && ((personagem.x + personagem.largura) >= obs.x) && ((personagem.y + personagem.altura - 40) >= (chao.y - obs.altura)))
 					{
 						currentState = state.lose;
 					
@@ -386,7 +388,6 @@
 						i--;
 					}
 				};
-					//document.getElementById('test').innerHTML = this.altura;
 
 			},
 
@@ -406,22 +407,44 @@
 
 		function click(event)
 		{
-			if (currentState == state.playing)
+
+			if(!KEY_PRESSED)
 			{
-				personagem.jump();
+				if (currentState == state.playing)
+				{
+					personagem.jump();
+				}
+				else if (currentState == state.play) 
+				{
+					currentState = state.playing;
+					sound.music.play();
+					menu.className = "hidden";
+				}
+				else if (currentState == state.lose)
+				{
+					currentState = state.play;
+					obstaculos.clear();
+					personagem.reset();
+				}	
 			}
-			else if (currentState == state.play) 
+			
+			KEY_PRESSED = true;
+		}
+
+
+		function clickSpace(event)
+		{
+			var keyCode = event.keyCode;
+			
+			if(keyCode == 32)
 			{
-				currentState = state.playing;
-				sound.music.play();
-				menu.className = "hidden";
+				click();
 			}
-			else if (currentState == state.lose && personagem.y >= 2 * ALTURA)
-			{
-				currentState = state.play;
-				obstaculos.clear();
-				personagem.reset();
-			}
+		}
+
+		function clickOut(event)
+		{
+			KEY_PRESSED = false;
 		}
 
 		function main()
@@ -437,7 +460,12 @@
 			ctx = canvas.getContext("2d");
 			
 			document.body.appendChild(canvas);
+
 			document.addEventListener("mousedown", click);
+			document.addEventListener("mouseup", clickOut);
+			
+			document.addEventListener("keydown", clickSpace, false);
+			document.addEventListener("keyup", clickOut, false);
 
 			sound.configure();
 			
@@ -450,7 +478,7 @@
 				record = 0;
 			}
 
-			run();	
+			run();
 		}
 		
 		function run()
@@ -484,14 +512,17 @@
 				
 				frames = 0;
 			
-				menu_record.className = "hidden";
+				menu_title.innerHTML = "O Eremita Do Iceberg";
+				menu_title.className = "";
 
-				menu.innerHTML = "Play!";
+				menu.innerHTML = "<div class=\"menu_info\">\> Play!</div>";
 				menu.className = "play";
 
 			}
 			else if (currentState == state.lose)
 			{
+
+				score.className = "hidden";
 			
 				if (personagem.score > record)
 				{
@@ -504,15 +535,18 @@
 
 				chao.pronto = false;
 			
-				menu_record.innerHTML = text_record;
-				menu_record.className = "";
+				menu_title.innerHTML = text_record;
+				menu_title.className = "";
 
-				menu.innerHTML = personagem.score;
+				menu.innerHTML = "<div class=\"menu_info\">" + personagem.score + "</div>";
 				menu.className = "lose";
 
 			}
 			else if (currentState == state.playing)
 			{
+				menu_title.className = "hidden";
+				score.className = "";
+
 				obstaculos.draw();
 			}
 
