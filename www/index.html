@@ -11,10 +11,40 @@
     <preference name="fullscreen" value="true" />
     
     <link rel="stylesheet" type="text/css" href="css/index.css" />
+	<script type="text/javascript" src="cordova.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
 
 	<title>Jogo HTML</title>
 
 	<style>
+
+		body
+		{
+			font-size: 50px;
+			font-weight: bold;
+			font-family: Comic Sans MS;
+			-webkit-text-stroke: 1px black;
+			color: white;
+			text-shadow:
+			3px 3px 0 #000,
+			-1px -1px 0 #000,
+			1px -1px 0 #000,
+			-1px 1px 0 #000,
+			1px 1px 0 #000;
+			overflow: hidden;
+		}
+
+		div
+		{
+			z-index: 1;
+			position: absolute;
+		}
+
+		p
+		{
+			text-align: center;
+		}
+
 		canvas 
 		{
 			position: absolute;
@@ -24,46 +54,117 @@
 			right: 0px;
 			margin: auto;
 		}
+
+		html 
+		{ 
+  			background: url(assets/img/mountains.gif) no-repeat center center fixed; 
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			-o-background-size: cover;
+			background-size: cover;
+		}
+
+		#context
+		{
+			top: 0px;
+			bottom: 0px;
+			left: 0px;
+			right: 0px;
+			width: 1200px;
+			height: 600px;
+			margin: auto;
+		}
+
+		#personagem
+		{
+			top: 10px;
+			left: 50px;
+		}
+
+		#record
+		{
+			top: 0px;
+			bottom: 150px;
+			left: 0px;
+			right: 0px;
+			width: 500px;
+			height: 140px;
+			margin: auto;
+			text-align: center;
+		}
+		
+		#menu
+		{
+			text-align: center;
+			top: 0px;
+			bottom: 0px;
+			left: 0px;
+			right: 0px;
+			width: 250px;
+			height: 150px;
+			margin: auto;
+		}
+
+		#score
+		{
+			top: 10px;
+			left: 50px;
+		}
+
+		.hidden
+		{
+			display: none;
+		}
+
+		.play
+		{
+			background: #99BEE5;
+		}
+
+		.lose
+		{
+			background: #FFADAD;
+		}
+
 	</style>
+
 </head>
-<!--<body style="background-image: url('assets/img/aurora-borealis.png')">
-<body style="background: #9eddf2">-->
-<body style="background-image: url('assets/img/mountains.gif')">
-	
-<script type="text/javascript" src="cordova.js"></script>
-<script type="text/javascript" src="js/index.js"></script>
+<body>
+	<div id="context">
+		<div id="test" style="top: 10px; left: 900px;"></div>
+		<div id="score"></div>
+		<div id="record">teste</div>
+		<div id="menu"></div>
+		<div id="personagem">
+			<img id="personagem_parado" src="assets/img/eremita_parado.png" width="72" height="103">
+			<img id="personagem_andando" src="assets/img/eremita_andando.png" width="72" height="100" class="hidden">
+			<img id="personagem_pulando" src="assets/img/eremita_pulando.png" width="72" height="100" class="hidden">
+		</div>
 
-<!-- autoplay -->
-<audio controls loop hidden id="musica">
-	<source src="assets/sound/05-mb-stage-theme-2.mp3" type="audio/mpeg">
-</audio>
+		<audio controls loop hidden id="musica"><source src="assets/sound/05-mb-stage-theme-2.mp3" type="audio/mpeg"></audio>
+		<audio controls hidden id="jump"><source src="assets/sound/mario-jump-sound.mp3" type="audio/mpeg"></audio>
+		<audio controls hidden id="die"><source src="assets/sound/player-down.mp3" type="audio/mpeg"></audio>
 
-<audio controls hidden id="jump">
-	<source src="assets/sound/mario-jump-sound.mp3" type="audio/mpeg">
-</audio>
-
-<audio controls hidden id="die">
-	<source src="assets/sound/player-down.mp3" type="audio/mpeg">
-</audio>
-
-	<div style="display:none;">
-		<img id="personagem_andando" src="assets/img/eremita_andando.png" width="55" height="100">
-		<img id="personagem_parado" src="assets/img/eremita_parado.png" width="55" height="100">
-		<img id="personagem_pulando" src="assets/img/eremita_pulando.png" width="65" height="90">
-		<img id="personagem_caindo" src="assets/img/marioJump2.png" width="32" height="44">
-		<img id="iceberg1" src="assets/img/iceberg1.gif" width="100" height="321">
-		<img id="iceberg2" src="assets/img/iceberg2.gif" width="100" height="215">
-		<img id="iceberg3" src="assets/img/iceberg3.gif" width="100" height="273">
-		<img id="chao_cima" src="assets/img/chao_cima_azul.png" width="32" height="44">
-		<img id="chao_borda_esquerda" src="assets/img/chao_borda_esquerda.png" width="32" height="32">
-		<img id="chao_borda_direita" src="assets/img/chao_borda_direita.png" width="32" height="32">
-		<img id="chao_esquerda" src="assets/img/chao_esquerda.png" width="32" height="32">
-		<img id="chao_direita" src="assets/img/chao_direita.png" width="32" height="32">
-		<img id="chao_dentro" src="assets/img/chao_dentro_azul.png" width="32" height="32">
+		<div style="display:none;">
+			<img id="personagem_caindo" src="assets/img/marioJump2.png" width="32" height="44">
+			<img id="iceberg1" src="assets/img/iceberg1.gif" width="100" height="321">
+			<img id="iceberg2" src="assets/img/iceberg2.gif" width="100" height="215">
+			<img id="iceberg3" src="assets/img/iceberg3.gif" width="100" height="273">
+			<img id="chao_cima" src="assets/img/chao_cima_azul.png" width="32" height="44">
+			<img id="chao_borda_esquerda" src="assets/img/chao_borda_esquerda.png" width="32" height="32">
+			<img id="chao_borda_direita" src="assets/img/chao_borda_direita.png" width="32" height="32">
+			<img id="chao_esquerda" src="assets/img/chao_esquerda.png" width="32" height="32">
+			<img id="chao_direita" src="assets/img/chao_direita.png" width="32" height="32">
+			<img id="chao_dentro" src="assets/img/chao_dentro_azul.png" width="32" height="32">
+		</div>
 	</div>
 <script>
-		var canvas, ctx, ALTURA, LARGURA, frames = 0, maxJump = 3, velocidade = 20,
+//document.getElementById('test').innerHTML = this.andando;
+		var canvas, ctx, ALTURA, LARGURA, LARGURA_TOTAL, frames = 0, maxJump = 3, velocidade = 20,
 		currentState, record,
+		score = document.getElementById('score'),
+		menu_record = document.getElementById('record'),
+		menu = document.getElementById('menu'),
 
 		state =
 		{
@@ -101,33 +202,28 @@
 
 		chao = 
 		{
-			y: 600,
+			y: 550,
 			altura: 50,
-			cor: "#9dd1e4",
 			count: 0,
 
 			draw: function()
 			{
-				this.drawGround();
-				ctx.fillStyle = this.cor;
-				ctx.fillRect(0, this.y + 64, LARGURA, ALTURA - 600);
-			},
-
-			drawGround: function()
-			{
-				if(this.count == 50)
+				if (!this.pronto || currentState == state.playing)
 				{
-					this.count = 0;
-				}
-				this.count += 5;
-				var i = 0;
-				while(i < LARGURA + this.count)
-				{
-					ctx.drawImage(document.getElementById('chao_cima'), i - this.count, this.y);
-					ctx.drawImage(document.getElementById('chao_dentro'), i - this.count, this.y + 32);
-					
-					i += 32;
-					this.pronto = true;
+					if(this.count == 50)
+					{
+						this.count = 0;
+					}
+					this.count += 5;
+					var i = 0;
+					while(i < LARGURA_TOTAL + this.count)
+					{
+						ctx.drawImage(document.getElementById('chao_cima'), i - this.count, this.y);
+						ctx.drawImage(document.getElementById('chao_dentro'), i - this.count, this.y + 32);
+						
+						i += 32;
+						this.pronto = true;
+					}
 				}
 			}
 
@@ -135,18 +231,19 @@
 
 		personagem = 
 		{
+			personagem: document.getElementById('personagem'),
+			parado: document.getElementById('personagem_parado'),
+			andando: document.getElementById('personagem_andando'),
+			pulando: document.getElementById('personagem_pulando'),
 			x: 50,
 			y: 0,
 			altura: 100,
 			largura: 55,
-			cor: "#666666",
-			/*gravidade: 1.6,*/
-			gravidade: 2,
+			gravidade: 2,/*1.6,*/
 			velocidade: 0,
 			forcaPulo: 23.6,
 			quantJump: 0,
-			andando: false,
-			imagem: false,
+			movimento: false,
 			passos_count: 0,
 			score: 0,
 
@@ -154,56 +251,53 @@
 			{
 				this.velocidade += this.gravidade;
 				this.y += this.velocidade;
+				this.personagem.style.top = this.y + "px";
 
-				if(this.y > chao.y - this.altura && currentState != state.lose)
+				if((this.y > chao.y - obstaculos.altura - this.altura) && (currentState != state.lose))
 				{
 					this.altura = 100;
 					this.largura = 55;
-					this.y = chao.y - this.altura;
+					this.y = chao.y - obstaculos.altura - this.altura;
 					this.quantJump = 0;
 					this.velocidade = 0;
+					this.passos_count++;
 
-					if(!this.andando)
+					if(this.passos_count == 4)
 					{
-						this.imagem = document.getElementById('personagem_andando');
-						this.passos_count++;
-						if(this.passos_count == 3)
-						{
-							this.andando = true;
-							this.passos_count = 0;							
-						}
-					}
-					else
-					{
-						this.imagem = document.getElementById('personagem_parado');
-						this.passos_count++;
-						if(this.passos_count == 3)
-						{
-							this.andando = false;
-							this.passos_count = 0;							
-						}
+						this.movimento = !this.movimento;
+						this.passos_count = 0;
+						((currentState == state.playing) && !this.movimento) ? this.walk() : this.stop();					
 					}
 				}
-				/*
-				else
-				{
-					this.imagem = document.getElementById('personagem_caindo');
-				}
-				*/
+				
+			},
+
+			stop: function()
+			{
+				this.pulando.className = "hidden";
+				this.andando.className = "hidden";
+				this.parado.className = "";
+			},
+
+			walk: function()
+			{
+				this.pulando.className = "hidden";
+				this.parado.className = "hidden";
+				this.andando.className = "";
 			},
 
 			jump: function()
 			{
 				if(this.quantJump < maxJump)
 				{
-					this.altura = 90;
 					this.largura = 65;
 					this.velocidade = - this.forcaPulo;
 					this.quantJump++;
 
-					this.imagem = document.getElementById('personagem_pulando');
+					this.andando.className = "hidden";
+					this.parado.className = "hidden";
+					this.pulando.className = "";
 					
-					//document.getElementById('jump').play();
 					sound.jump.currentTime = 0;
 					sound.jump.play();
 				}
@@ -221,20 +315,6 @@
 				}
 
 				this.score = 0;
-			},
-
-			draw: function()
-			{
-				if (!this.imagem)
-				{
-					this.imagem = document.getElementById('personagem_parado');
-				}
-
-				ctx.drawImage(this.imagem,this.x,this.y);
-				/*
-				ctx.fillStyle = this.cor;
-				ctx.fillRect(this.x, this.y, this.largura, this.altura);
-				*/
 			}
 
 		},
@@ -242,19 +322,17 @@
 		obstaculos = 
 		{
 			_obs: [],
-			cores: ["#174478","#174478","#174478"],
 			images: [document.getElementById('iceberg1'), document.getElementById('iceberg2'), document.getElementById('iceberg3')],
 			insertTime: 0,
 			passou: false,
+			altura: 0,
 
 			insert: function()
 			{
 				this._obs.push({
 					x: LARGURA,
-					//largura: 30 + Math.floor(21 * Math.random()),
 					largura: 50,
-					altura: 30 + Math.floor(200 * Math.random()),
-					//cor: this.cores[Math.floor(1 * Math.random())]
+					altura: 30 + Math.floor(180 * Math.random()),
 					image: this.images[Math.floor(3 * Math.random())]
 				});
 
@@ -263,6 +341,8 @@
 
 			update: function()
 			{
+				ctx.clearRect ( 0 , 0 , LARGURA, ALTURA );
+
 				if(this.insertTime == 0)
 				{
 					this.insert();
@@ -272,22 +352,32 @@
 					this.insertTime--;
 				}
 
-				for (var i = 0, tam = this._obs.length; i < tam; i++) {
+				for (var i = 0, tam = this._obs.length; i < tam; i++)
+				{
 					var obs = this._obs[i];
-					
+
 					obs.x -= velocidade;
 
-					if (personagem.x < obs.x + obs.largura && personagem.x + personagem.largura >= obs.x && personagem.y + personagem.altura >= chao.y - obs.altura)
+					/*cima ---- | frente ][ | altura */
+					//if (personagem.x < obs.x + obs.largura && personagem.x + personagem.largura >= obs.x && personagem.y + personagem.altura >= chao.y - obs.altura)
+					if ((personagem.x < obs.x) && ((personagem.x + personagem.largura) >= obs.x) && ((personagem.y + personagem.altura - 10) >= (chao.y - obs.altura)))
 					{
 						currentState = state.lose;
-
+					
 						sound.reset();
 						sound.die.play();
 					}
-					else if(obs.x < personagem.x && !obs.passou)
+					else if((obs.x <= personagem.x + personagem.largura) && (obs.x + obs.largura >= personagem.x + 1))
+					{
+						this.altura = obs.altura;
+					}
+					else if((obs.x < personagem.x) && (!obs.passou))
 					{
 						personagem.score++;
 						obs.passou = true;
+
+						this.altura = 0;
+						
 					}
 					else if(obs.x <= -obs.largura)
 					{
@@ -296,6 +386,8 @@
 						i--;
 					}
 				};
+					//document.getElementById('test').innerHTML = this.altura;
+
 			},
 
 			clear: function()
@@ -307,10 +399,6 @@
 			{
 				for (var i = 0, tam = this._obs.length; i < tam; i++) {
 					var obs = this._obs[i];
-					/*
-					ctx.fillStyle = obs.cor;
-					ctx.fillRect(obs.x, chao.y - obs.altura, obs.largura, obs.altura);
-					*/
 					ctx.drawImage(obs.image, obs.x - 30, chao.y - obs.altura);
 				};
 			}
@@ -326,6 +414,7 @@
 			{
 				currentState = state.playing;
 				sound.music.play();
+				menu.className = "hidden";
 			}
 			else if (currentState == state.lose && personagem.y >= 2 * ALTURA)
 			{
@@ -337,21 +426,16 @@
 
 		function main()
 		{
-			ALTURA = window.innerHeight;
-			LARGURA = window.innerWidth;
-/*
-			if(LARGURA >= 500)
-			{
-				LARGURA = 1000;
-				ALTURA = 600;
-			}
-*/
+			LARGURA_TOTAL = window.innerWidth;
+			LARGURA = 1200;
+			ALTURA = 600;
+	
 			canvas = document.createElement("canvas");
 			canvas.width = LARGURA;
 			canvas.height = ALTURA;
-			canvas.style.border = "1px solid #666666";
-
+			
 			ctx = canvas.getContext("2d");
+			
 			document.body.appendChild(canvas);
 			document.addEventListener("mousedown", click);
 
@@ -366,8 +450,6 @@
 				record = 0;
 			}
 
-
-
 			run();	
 		}
 		
@@ -376,7 +458,8 @@
 			update();
 			draw();
 
-			setTimeout(function(){
+			setTimeout(function()
+			{
 				window.requestAnimationFrame(run);
 			}, 4);
 		}
@@ -394,81 +477,46 @@
 		
 		function draw()
 		{
-			ctx.fillStyle = "#EAF1F9";
-			//ctx.fillRect(0, 0, LARGURA, 600);
-			ctx.clearRect ( 0 , 0 , LARGURA, ALTURA );
-			
-			ctx.fillStyle = "#FFFFFF";
-			ctx.font = "bold 50px Verdana";
-			ctx.fillText(personagem.score, 30, 68);
+			score.innerHTML = personagem.score;
 
 			if(currentState == state.play)
 			{
 				
 				frames = 0;
-				ctx.fillStyle = "#B7D4F4";
-				ctx.fillRect(LARGURA / 2 - 100, ALTURA / 2 - 50, 200, 100);
+			
+				menu_record.className = "hidden";
 
-				ctx.save();
-				ctx.translate(LARGURA / 2, ALTURA / 2);
-				ctx.fillStyle = "#156D9C";
-				ctx.fillText("Jogar!", -85, 19);
-				ctx.restore();
+				menu.innerHTML = "Play!";
+				menu.className = "play";
 
 			}
 			else if (currentState == state.lose)
 			{
-				ctx.fillStyle = "#FFADAD";
-				ctx.fillRect(LARGURA / 2 - 100, ALTURA / 2 - 50, 200, 100);
-				
-				ctx.save();
-				ctx.translate(LARGURA / 2, ALTURA / 2);
-				ctx.fillStyle = "#156D9C";
-
+			
 				if (personagem.score > record)
 				{
-					ctx.fillText("Novo Record!", -150, -65);
-				}
-				else if(record < 10)
-				{
-					ctx.fillText("Record " + record, -120, -65);
-				}
-				else if(record < 100)
-				{
-					ctx.fillText("Record " + record, -130, -65);
+					text_record = "Novo Record!";
 				}
 				else
 				{
-					ctx.fillText("Record " + record, -150, -65);
-				}
-
-				if (personagem.score < 10)
-				{
-					ctx.fillText(personagem.score, -18, 19);
-				}
-				else if (personagem.score < 100)
-				{
-					ctx.fillText(personagem.score, -31, 19);
-				}
-				else 
-				{
-					ctx.fillText(personagem.score, -44, 19);
+					text_record = "Record " + record;
 				}
 
 				chao.pronto = false;
-				ctx.restore();
+			
+				menu_record.innerHTML = text_record;
+				menu_record.className = "";
 
-				//chao.draw();
+				menu.innerHTML = personagem.score;
+				menu.className = "lose";
 
 			}
 			else if (currentState == state.playing)
 			{
 				obstaculos.draw();
-				ctx.fillText(frames, LARGURA - 120, 65);
 			}
 
 			chao.draw();
-			personagem.draw();
 		}
 
 		main();
