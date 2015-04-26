@@ -417,12 +417,15 @@
 				else if (currentState == state.play) 
 				{
 					currentState = state.playing;
+					
 					sound.music.play();
 					menu.className = "hidden";
 				}
 				else if (currentState == state.lose)
 				{
 					currentState = state.play;
+					
+					sound.reset();
 					obstaculos.clear();
 					personagem.reset();
 				}	
@@ -463,7 +466,7 @@
 
 			document.addEventListener("mousedown", click);
 			document.addEventListener("mouseup", clickOut);
-			
+
 			document.addEventListener("keydown", clickSpace, false);
 			document.addEventListener("keyup", clickOut, false);
 
