@@ -36,7 +36,6 @@
 
 		div
 		{
-			z-index: 1;
 			position: absolute;
 		}
 
@@ -53,6 +52,7 @@
 			left: 0px;
 			right: 0px;
 			margin: auto;
+			z-index: 2;
 		}
 
 		html 
@@ -79,9 +79,29 @@
 		{
 			top: 10px;
 			left: 50px;
+			z-index: 5;
+		}
+/*
+		#iceberg
+		{
+			top:550px;
+			z-index: 1;
 		}
 
-		#menu_title
+		#chao
+		{
+			background: #9CD0E4;
+			z-index: 2;
+			top: 600px;
+			bottom: 0px;
+			left: 0px;
+			right: 0px;
+			width: 100%;
+			height: 300px;
+			margin: auto;
+		}
+
+*/		#menu_title
 		{
 			top: 0px;
 			bottom: 150px;
@@ -132,8 +152,8 @@
 		{
 			margin-top: 10px;
 			width: 250px;
-
 		}
+
 
 	</style>
 
@@ -150,15 +170,24 @@
 			<img id="personagem_pulando" src="assets/img/eremita_pulando.png" width="72" height="100" class="hidden">
 		</div>
 
+		<div id="obstaculos" style="clip: rect(0px, 1200px, 550px, 0px);">
+			
+		</div>
+
+		<div id="iceberg">
+			<img id="iceberg1" src="assets/img/iceberg1.gif" width="100" height="321" class="hidden">
+			<img id="iceberg2" src="assets/img/iceberg2.gif" width="100" height="215" class="hidden">
+			<img id="iceberg3" src="assets/img/iceberg3.gif" width="100" height="273" class="hidden">
+		</div>
+
+		<div id="chao"></div>
+
 		<audio controls loop hidden id="musica"><source src="assets/sound/05-mb-stage-theme-2.mp3" type="audio/mpeg"></audio>
 		<audio controls hidden id="jump"><source src="assets/sound/mario-jump-sound.mp3" type="audio/mpeg"></audio>
 		<audio controls hidden id="die"><source src="assets/sound/player-down.mp3" type="audio/mpeg"></audio>
 
 		<div style="display:none;">
 			<img id="personagem_caindo" src="assets/img/marioJump2.png" width="32" height="44">
-			<img id="iceberg1" src="assets/img/iceberg1.gif" width="100" height="321">
-			<img id="iceberg2" src="assets/img/iceberg2.gif" width="100" height="215">
-			<img id="iceberg3" src="assets/img/iceberg3.gif" width="100" height="273">
 			<img id="chao_cima" src="assets/img/chao_cima_azul.png" width="32" height="44">
 			<img id="chao_borda_esquerda" src="assets/img/chao_borda_esquerda.png" width="32" height="32">
 			<img id="chao_borda_direita" src="assets/img/chao_borda_direita.png" width="32" height="32">
@@ -323,6 +352,7 @@
 
 		obstaculos = 
 		{
+			obstaculos: document.getElementById("obstaculos"),
 			_obs: [],
 			images: [document.getElementById('iceberg1'), document.getElementById('iceberg2'), document.getElementById('iceberg3')],
 			insertTime: 0,
@@ -335,7 +365,8 @@
 					x: LARGURA,
 					largura: 50,
 					altura: 40 + Math.floor(180 * Math.random()),
-					image: this.images[Math.floor(3 * Math.random())]
+					image: this.images[Math.floor(3 * Math.random())].cloneNode(),
+					insert: true,
 				});
 
 				this.insertTime = 20 + Math.floor(21 * Math.random());
@@ -357,6 +388,15 @@
 				for (var i = 0, tam = this._obs.length; i < tam; i++)
 				{
 					var obs = this._obs[i];
+					if (obs.insert)
+					{
+						obs.image.className = "";
+						obs.image.style.position = "absolute";
+						this.obstaculos.appendChild(obs.image);					
+					}
+
+					obs.image.style.left = (obs.x - 30) + "px";
+					obs.image.style.top = (chao.y - obs.altura) + "px";
 
 					obs.x -= velocidade;
 
@@ -366,6 +406,7 @@
 					{
 						currentState = state.lose;
 					
+						personagem.jump();
 						sound.reset();
 						sound.die.play();
 					}
@@ -381,9 +422,11 @@
 						this.altura = 0;
 						
 					}
-					else if(obs.x <= -obs.largura)
+					else if(obs.x < -obs.largura)
 					{
 						this._obs.splice(i, 1);
+						this.obstaculos.removeChild(this.obstaculos.firstChild);
+						
 						tam--;
 						i--;
 					}
@@ -394,15 +437,18 @@
 			clear: function()
 			{
 				this._obs = [];
-			},
-
-			draw: function()
-			{
-				for (var i = 0, tam = this._obs.length; i < tam; i++) {
-					var obs = this._obs[i];
-					ctx.drawImage(obs.image, obs.x - 30, chao.y - obs.altura);
-				};
+				while (this.obstaculos.hasChildNodes()) {  
+					this.obstaculos.removeChild(this.obstaculos.firstChild);
+				}
 			}
+
+			// draw: function()
+			// {
+			// 	for (var i = 0, tam = this._obs.length; i < tam; i++) {
+			// 		var obs = this._obs[i];
+			// 		ctx.drawImage(obs.image, obs.x - 30, chao.y - obs.altura);
+			// 	};
+			// }
 		};
 
 		function click(event)
@@ -550,7 +596,7 @@
 				menu_title.className = "hidden";
 				score.className = "";
 
-				obstaculos.draw();
+				//obstaculos.draw();
 			}
 
 			chao.draw();
