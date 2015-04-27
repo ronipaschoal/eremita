@@ -133,6 +133,12 @@
 			left: 50px;
 		}
 
+		#record_panel
+		{
+			top: 10px;
+			right: 50px;
+		}
+
 		.hidden
 		{
 			display: none;
@@ -161,7 +167,8 @@
 <body>
 	<div id="context">
 		<div id="test" style="top: 10px; left: 900px;"></div>
-		<div id="score"></div>
+		<div id="score" class="hidden"></div>
+		<div id="record_panel" class="hidden"></div>
 		<div id="menu_title"></div>
 		<div id="menu"></div>
 		<div id="personagem">
@@ -201,6 +208,7 @@
 		var canvas, ctx, ALTURA, LARGURA, LARGURA_TOTAL, frames = 0, maxJump = 3, velocidade = 20,
 		currentState, record, KEY_PRESSED = false;
 		score = document.getElementById('score'),
+		record_panel = document.getElementById('record_panel'),
 		menu_title = document.getElementById('menu_title'),
 		menu = document.getElementById('menu'),
 
@@ -374,7 +382,7 @@
 
 			update: function()
 			{
-				ctx.clearRect ( 0 , 0 , LARGURA, ALTURA );
+				//ctx.clearRect ( 0 , 0 , LARGURA, ALTURA );
 
 				if(this.insertTime == 0)
 				{
@@ -422,10 +430,10 @@
 						this.altura = 0;
 						
 					}
-					else if(obs.x < -obs.largura)
+					else if(obs.x < -obs.largura - 30)
 					{
-						this._obs.splice(i, 1);
 						this.obstaculos.removeChild(this.obstaculos.firstChild);
+						this._obs.splice(i, 1);
 						
 						tam--;
 						i--;
@@ -433,7 +441,7 @@
 				};
 
 			},
-
+			
 			clear: function()
 			{
 				this._obs = [];
@@ -554,7 +562,8 @@
 		
 		function draw()
 		{
-			score.innerHTML = personagem.score;
+			score.innerHTML = "<small>Score: </small>" + personagem.score;
+			record_panel.innerHTML = "<small>Record: </small>" + record;
 
 			if(currentState == state.play)
 			{
@@ -572,7 +581,8 @@
 			{
 
 				score.className = "hidden";
-			
+				record_panel.className = "hidden";
+
 				if (personagem.score > record)
 				{
 					text_record = "Novo Record!";
@@ -595,6 +605,7 @@
 			{
 				menu_title.className = "hidden";
 				score.className = "";
+				record_panel.className = "";
 
 				//obstaculos.draw();
 			}
