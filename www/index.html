@@ -5,7 +5,7 @@
 	<meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
     <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-    <meta name="viewport" content="user-scalable=no, initial-scale=3, maximum-scale=3, minimum-scale=3, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=0.5, width=device-width, height=device-height, target-densitydpi=device-dpi" />
 
     <preference name="orientation" value="landscape" />
     <preference name="fullscreen" value="true" />
@@ -32,11 +32,19 @@
 			-1px 1px 0 #000,
 			1px 1px 0 #000;
 			overflow: hidden;
+			-webkit-user-select: none;  /* Chrome all / Safari all */
+			-moz-user-select: none;     /* Firefox all */
+			-ms-user-select: none;      /* IE 10+ */
+			-o-user-select: none;
+			user-select: none;
+			user-drag: none;
+
 		}
 
 		div
 		{
 			position: absolute;
+			z-index: 10;
 		}
 
 		p
@@ -52,9 +60,9 @@
 			left: 0px;
 			right: 0px;
 			margin: auto;
-			z-index: 2;
+			z-index: 4;
 		}
-
+/*
 		html 
 		{
   			background: url(assets/img/mountains.gif) no-repeat center center fixed; 
@@ -62,6 +70,14 @@
 			-moz-background-size: cover;
 			-o-background-size: cover;
 			background-size: cover;
+		}
+*/
+		#background
+		{
+			z-index: 1;
+			width: 100%;
+			height: 100%;
+			position: fixed;
 		}
 
 		#context
@@ -81,13 +97,14 @@
 			left: 50px;
 			z-index: 5;
 		}
-/*
-		#iceberg
+		#obstaculos
 		{
-			top:550px;
-			z-index: 1;
+			z-index: 2;
+			position: absolute;
+			clip: rect(0px, 1200px, 550px, 0px);
 		}
 
+/*
 		#chao
 		{
 			background: #9CD0E4;
@@ -164,6 +181,7 @@
 
 </head>
 <body>
+	<img src="assets/img/mountains.gif" alt="" id="background">
 	<div id="context">
 		<div id="test" style="top: 10px; left: 900px;"></div>
 		<div id="score" class="hidden"></div>
@@ -172,11 +190,11 @@
 		<div id="menu"></div>
 		<div id="personagem">
 			<img id="personagem_parado" src="assets/img/eremita_parado.png" width="72" height="103">
-			<img id="personagem_andando" src="assets/img/eremita_andando.png" width="72" height="100" class="hidden">
+			<img id="personagem_andando" src="assets/img/eremita_andando.gif" width="72" height="100" class="hidden">
 			<img id="personagem_pulando" src="assets/img/eremita_pulando.png" width="72" height="100" class="hidden">
 		</div>
 
-		<div id="obstaculos" style="clip: rect(0px, 1200px, 550px, 0px);">
+		<div id="obstaculos">
 			
 		</div>
 
@@ -193,14 +211,14 @@
 		<audio controls hidden id="die"><source src="assets/sound/player-down.mp3" type="audio/mpeg"></audio>
 
 		<div style="display:none;">
-			<img id="chao_cima" src="assets/img/chao_cima_azul.png" width="32" height="44">
-			<img id="chao_dentro" src="assets/img/chao_dentro_azul.png" width="32" height="32">
+			<img id="chao_azul" src="assets/img/chao_azul.gif" width="32" height="64">
 		</div>
 	</div>
 <script>
 //document.getElementById('test').innerHTML = this.andando;
-		var canvas, ctx, ALTURA, LARGURA, LARGURA_TOTAL, frames = 0, maxJump = 3, velocidade = 20,
-		currentState, record, KEY_PRESSED = false;
+		var canvas, ctx, ALTURA, LARGURA, LARGURA_TOTAL, frames = 0, maxJump = 3, mobile = false, 
+		velocidade = (mobile) ? 60 : 25,
+		currentState, record,
 		score = document.getElementById('score'),
 		record_panel = document.getElementById('record_panel'),
 		menu_title = document.getElementById('menu_title'),
@@ -221,9 +239,9 @@
 
 			configure: function()
 			{
-				this.jump.volume = 0.1;
-				this.music.volume = 0.3;
-				this.die.volume = 0.1;
+				this.jump.volume = 0.2;
+				this.music.volume = 0.2;
+				this.die.volume = 0.2;
 			},
 
 			reset: function()
@@ -245,10 +263,11 @@
 			y: 550,
 			altura: 50,
 			count: 0,
+			pronto: false,
 
 			draw: function()
 			{
-				if (!this.pronto || currentState == state.playing)
+				if ((!this.pronto) || (currentState == state.playing))
 				{
 					if(this.count == 50)
 					{
@@ -258,12 +277,12 @@
 					var i = 0;
 					while(i < LARGURA_TOTAL + this.count)
 					{
-						ctx.drawImage(document.getElementById('chao_cima'), i - this.count, this.y);
-						ctx.drawImage(document.getElementById('chao_dentro'), i - this.count, this.y + 32);
+						ctx.drawImage(document.getElementById('chao_azul'), i - this.count, this.y);
 						
 						i += 32;
-						this.pronto = true;
 					}
+					this.pronto = true;
+
 				}
 			}
 
@@ -279,12 +298,11 @@
 			y: 0,
 			altura: 100,
 			largura: 55,
-			gravidade: 2,/*1.6,*/
+			gravidade: (mobile) ? 7 : 2.5,
 			velocidade: 0,
-			forcaPulo: 23.6,
+			forcaPulo: (mobile) ? 39 : 24.6,
 			quantJump: 0,
 			movimento: false,
-			passos_count: 0,
 			score: 0,
 
 			update: function()
@@ -300,14 +318,11 @@
 					this.y = chao.y - obstaculos.altura - this.altura;
 					this.quantJump = 0;
 					this.velocidade = 0;
-					this.passos_count++;
 
-					if(this.passos_count == 4)
-					{
-						this.movimento = !this.movimento;
-						this.passos_count = 0;
-						((currentState == state.playing) && !this.movimento) ? this.changeStatus("andando") : this.changeStatus("parado");					
-					}
+				}
+				if(((this.y > chao.y - obstaculos.altura - this.altura) || (this.velocidade > 9)) && (currentState != state.lose))
+				{
+					this.changeStatus("andando");
 				}
 				
 			},
@@ -371,13 +386,13 @@
 					insert: true,
 				});
 
-				this.insertTime = 20 + Math.floor(21 * Math.random());
+				//this.insertTime = 20 + Math.floor(21 * Math.random());
+				distancia = (mobile) ? 8 : 20;
+				this.insertTime = distancia + Math.floor(21 * Math.random());
 			},
 
 			update: function()
 			{
-				//ctx.clearRect ( 0 , 0 , LARGURA, ALTURA );
-
 				if(this.insertTime == 0)
 				{
 					this.insert();
@@ -394,7 +409,7 @@
 					{
 						obs.image.className = "";
 						obs.image.style.position = "absolute";
-						this.obstaculos.appendChild(obs.image);					
+						this.obstaculos.appendChild(obs.image);				
 					}
 
 					obs.image.style.left = (obs.x - 30) + "px";
@@ -443,43 +458,31 @@
 					this.obstaculos.removeChild(this.obstaculos.firstChild);
 				}
 			}
-
-			// draw: function()
-			// {
-			// 	for (var i = 0, tam = this._obs.length; i < tam; i++) {
-			// 		var obs = this._obs[i];
-			// 		ctx.drawImage(obs.image, obs.x - 30, chao.y - obs.altura);
-			// 	};
-			// }
 		};
 
 		function click(event)
 		{
-
-			if(!KEY_PRESSED)
+			if (currentState == state.playing)
 			{
-				if (currentState == state.playing)
-				{
-					personagem.jump();
-				}
-				else if (currentState == state.play) 
-				{
-					currentState = state.playing;
-					
-					sound.music.play();
-					menu.className = "hidden";
-				}
-				else if (currentState == state.lose)
-				{
-					currentState = state.play;
-					
-					sound.reset();
-					obstaculos.clear();
-					personagem.reset();
-				}	
+				personagem.jump();
 			}
-			
-			KEY_PRESSED = true;
+			else if (currentState == state.play) 
+			{
+				personagem.changeStatus("andando");
+
+				currentState = state.playing;
+				
+				sound.music.play();
+				menu.className = "hidden";
+			}
+			else if (currentState == state.lose)
+			{
+				currentState = state.play;
+				
+				sound.reset();
+				obstaculos.clear();
+				personagem.reset();
+			}	
 		}
 
 
@@ -491,11 +494,6 @@
 			{
 				click();
 			}
-		}
-
-		function clickOut(event)
-		{
-			KEY_PRESSED = false;
 		}
 
 		function main()
@@ -513,10 +511,11 @@
 			document.body.appendChild(canvas);
 
 			document.addEventListener("mousedown", click);
-			document.addEventListener("mouseup", clickOut);
 
-			document.addEventListener("keydown", clickSpace, false);
-			document.addEventListener("keyup", clickOut, false);
+			if(!mobile)
+			{
+				document.addEventListener("keydown", clickSpace, false);				
+			}
 
 			sound.configure();
 			
@@ -537,10 +536,10 @@
 			update();
 			draw();
 
-			setTimeout(function()
-			{
+			// setTimeout(function()
+			// {
 				window.requestAnimationFrame(run);
-			}, 4);
+			// }, 4);
 		}
 		
 		function update()
@@ -564,6 +563,8 @@
 				
 				frames = 0;
 			
+				personagem.changeStatus("parado");
+
 				menu_title.innerHTML = "O Eremita Do Iceberg";
 				menu_title.className = "";
 
@@ -586,8 +587,6 @@
 					text_record = "Record " + record;
 				}
 
-				chao.pronto = false;
-			
 				menu_title.innerHTML = text_record;
 				menu_title.className = "";
 
@@ -600,8 +599,6 @@
 				menu_title.className = "hidden";
 				score.className = "";
 				record_panel.className = "";
-
-				//obstaculos.draw();
 			}
 
 			chao.draw();
