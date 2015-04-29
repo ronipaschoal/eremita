@@ -362,22 +362,39 @@
 			update: function()
 			{
 				this.velocidade += this.gravidade;
-				this.y += this.velocidade;
-				this.personagem.style.top = this.y + "px";
-
-				if((this.y > ground.y - obstaculos.altura - this.altura) && (currentState != state.lose))
+				if(currentState != state.lose)
 				{
-					this.altura = 100;
-					this.largura = 55;
-					this.y = ground.y - obstaculos.altura - this.altura;
-					this.quantJump = 0;
-					this.velocidade = 0;
+					if((this.y + this.velocidade) <= (ground.y - obstaculos.altura - this.altura))
+					{
+						this.y += this.velocidade;					
+					}
+					else
+					{
+						this.y = (ground.y - obstaculos.altura - this.altura);
+					}
 
+					this.personagem.style.top = this.y + "px";
+
+					if(this.y >= ground.y - obstaculos.altura - this.altura)
+					{
+						this.altura = 99;
+						this.largura = 55;
+						this.y = ground.y - obstaculos.altura - this.altura;
+						this.quantJump = 0;
+						this.velocidade = 0;
+
+					}
+					if((this.y > ground.y - obstaculos.altura - this.altura) || (this.velocidade > 9))
+					{
+						this.changeStatus("andando");
+					}
 				}
-				if(((this.y > ground.y - obstaculos.altura - this.altura) || (this.velocidade > 9)) && (currentState != state.lose))
+				else
 				{
-					this.changeStatus("andando");
+					this.y += this.velocidade;
+					this.personagem.style.top = this.y + "px";
 				}
+				
 				
 			},
 
