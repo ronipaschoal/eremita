@@ -45,6 +45,12 @@
 		{
 			position: absolute;
 			z-index: 10;
+			-webkit-user-select: none;  /* Chrome all / Safari all */
+			-moz-user-select: none;     /* Firefox all */
+			-ms-user-select: none;      /* IE 10+ */
+			-o-user-select: none;
+			user-select: none;
+			user-drag: none;
 		}
 
 		p
@@ -52,16 +58,6 @@
 			text-align: center;
 		}
 
-		canvas 
-		{
-			position: absolute;
-			top: 0px;
-			bottom: 0px;
-			left: 0px;
-			right: 0px;
-			margin: auto;
-			z-index: 4;
-		}
 /*
 		html 
 		{
@@ -104,12 +100,10 @@
 			clip: rect(0px, 1200px, 550px, 0px);
 		}
 
-/*
-		#chao
+		#ground
 		{
-			background: #9CD0E4;
 			z-index: 2;
-			top: 600px;
+			top: 565px;
 			bottom: 0px;
 			left: 0px;
 			right: 0px;
@@ -118,7 +112,7 @@
 			margin: auto;
 		}
 
-*/		#menu_title
+		#menu_title
 		{
 			top: 0px;
 			bottom: 150px;
@@ -198,25 +192,24 @@
 			
 		</div>
 
-		<div id="iceberg">
-			<img id="iceberg1" src="assets/img/iceberg1.gif" width="100" height="321" class="hidden">
-			<img id="iceberg2" src="assets/img/iceberg2.gif" width="100" height="215" class="hidden">
-			<img id="iceberg3" src="assets/img/iceberg3.gif" width="100" height="273" class="hidden">
+		<div id="iceberg" class="hidden">
+			<img id="iceberg1" src="assets/img/iceberg1.gif" width="100" height="321">
+			<img id="iceberg2" src="assets/img/iceberg2.gif" width="100" height="215">
+			<img id="iceberg3" src="assets/img/iceberg3.gif" width="100" height="273">
 		</div>
-
-		<div id="chao"></div>
 
 		<audio controls loop hidden id="musica"><source src="assets/sound/05-mb-stage-theme-2.mp3" type="audio/mpeg"></audio>
 		<audio controls hidden id="jump"><source src="assets/sound/mario-jump-sound.mp3" type="audio/mpeg"></audio>
 		<audio controls hidden id="die"><source src="assets/sound/player-down.mp3" type="audio/mpeg"></audio>
 
 		<div style="display:none;">
-			<img id="chao_azul" src="assets/img/chao_azul.gif" width="32" height="64">
+			<img id="ground_blue" src="assets/img/chao_azul.gif"style="position: absolute; width: 32px; height: 64px" >
 		</div>
 	</div>
+	<div id="ground" style="height: 64px"></div>
 <script>
 //document.getElementById('test').innerHTML = this.andando;
-		var canvas, ctx, ALTURA, LARGURA, LARGURA_TOTAL, frames = 0, maxJump = 3, mobile = false, 
+		var ALTURA, LARGURA, LARGURA_TOTAL, frames = 0, maxJump = 3, mobile = true, 
 		velocidade = (mobile) ? 60 : 25,
 		currentState, record,
 		score = document.getElementById('score'),
@@ -258,32 +251,93 @@
 			
 		},
 
-		chao = 
+		ground = 
 		{
+			div: document.getElementById('ground'),
+			img: document.getElementById('ground_blue'),
 			y: 550,
 			altura: 50,
 			count: 0,
-			pronto: false,
+			left: false,
+
+			prepair: function()
+			{
+				LARGURA_TOTAL
+				for (var i = 0; i < LARGURA_TOTAL + 32; i += 32)
+				{
+					img = this.img.cloneNode();
+					img.style.left = i + "px";
+					this.div.appendChild(img);
+				};
+			},
+
+			move: function()
+			{
+				while (true)
+				{
+					for (var i = 0; i < LARGURA_TOTAL + 32; i++) {
+						this.div.style.left = i + "px";
+					};
+					for (var i = LARGURA_TOTAL - 1; i >= 0; i--) {
+						this.div.style.left = i + "px";
+					};
+				}
+
+			},
 
 			draw: function()
 			{
-				if ((!this.pronto) || (currentState == state.playing))
+				this.left = !this.left;
+				this.count = (this.left) ? - 4: 4;
+				this.div.style.left = this.count +  "px";
+				// if(this.count <= - 32)
+				// {
+				// 	this.div.style.left = this.count +  "px";
+				// 	//img = this.img.cloneNode();
+				// 	//img.style.left = LARGURA_TOTAL + -this.count + "px";
+				// 	//this.div.appendChild(img);
+
+				// 	//this.div.removeChild(this.div.firstChild);
+
+				// }
+				// else()
+				// this.div.style.left = this.count +  "px";
+				/*
+				if(this.count == 32)
 				{
-					if(this.count == 50)
-					{
-						this.count = 0;
-					}
-					this.count += 5;
-					var i = 0;
-					while(i < LARGURA_TOTAL + this.count)
-					{
-						ctx.drawImage(document.getElementById('chao_azul'), i - this.count, this.y);
-						
-						i += 32;
-					}
-					this.pronto = true;
+					this.count = 0;
+					this.div.removeChild(this.div.lastChild);
+
+					img.style.left = LARGURA_TOTAL + 32 + "px";
+					this.div.appendChild(img);
 
 				}
+				this.count += 16;
+*/
+				/*
+				
+				// 
+				var i = 0;
+				while(i < LARGURA_TOTAL + this.count)
+				{
+
+					
+//					ctx.drawImage(, i - this.count, this.y);
+					//this.images[Math.floor(3 * Math.random())].cloneNode()
+
+
+						obs.image.className = "";
+						obs.image.style.position = "absolute";
+						this.obstaculos.appendChild(obs.image);
+					}
+
+					obs.image.style.left = (obs.x - 30) + "px";
+					obs.image.style.top = (ground.y - obs.altura) + "px";
+
+
+					i += 32;
+				}
+				*/
 			}
 
 		},
@@ -311,16 +365,16 @@
 				this.y += this.velocidade;
 				this.personagem.style.top = this.y + "px";
 
-				if((this.y > chao.y - obstaculos.altura - this.altura) && (currentState != state.lose))
+				if((this.y > ground.y - obstaculos.altura - this.altura) && (currentState != state.lose))
 				{
 					this.altura = 100;
 					this.largura = 55;
-					this.y = chao.y - obstaculos.altura - this.altura;
+					this.y = ground.y - obstaculos.altura - this.altura;
 					this.quantJump = 0;
 					this.velocidade = 0;
 
 				}
-				if(((this.y > chao.y - obstaculos.altura - this.altura) || (this.velocidade > 9)) && (currentState != state.lose))
+				if(((this.y > ground.y - obstaculos.altura - this.altura) || (this.velocidade > 9)) && (currentState != state.lose))
 				{
 					this.changeStatus("andando");
 				}
@@ -407,25 +461,25 @@
 					var obs = this._obs[i];
 					if (obs.insert)
 					{
-						obs.image.className = "";
 						obs.image.style.position = "absolute";
-						this.obstaculos.appendChild(obs.image);				
+						this.obstaculos.appendChild(obs.image);
 					}
 
 					obs.image.style.left = (obs.x - 30) + "px";
-					obs.image.style.top = (chao.y - obs.altura) + "px";
+					obs.image.style.top = (ground.y - obs.altura) + "px";
 
 					obs.x -= velocidade;
 
 					/*cima ---- | frente ][ | altura */
-					//if (personagem.x < obs.x + obs.largura && personagem.x + personagem.largura >= obs.x && personagem.y + personagem.altura >= chao.y - obs.altura)
-					if ((personagem.x < obs.x) && ((personagem.x + personagem.largura) >= obs.x) && ((personagem.y + personagem.altura - 40) >= (chao.y - obs.altura)))
+					//if (personagem.x < obs.x + obs.largura && personagem.x + personagem.largura >= obs.x && personagem.y + personagem.altura >= ground.y - obs.altura)
+					if ((personagem.x < obs.x) && ((personagem.x + personagem.largura) >= obs.x) && ((personagem.y + personagem.altura - 40) >= (ground.y - obs.altura)))
 					{
 						currentState = state.lose;
 					
 						personagem.jump();
 						sound.reset();
 						sound.die.play();
+
 					}
 					else if((obs.x <= personagem.x + personagem.largura) && (obs.x + obs.largura >= personagem.x + 1))
 					{
@@ -501,15 +555,7 @@
 			LARGURA_TOTAL = window.innerWidth;
 			LARGURA = 1200;
 			ALTURA = 600;
-	
-			canvas = document.createElement("canvas");
-			canvas.width = LARGURA;
-			canvas.height = ALTURA;
 			
-			ctx = canvas.getContext("2d");
-			
-			document.body.appendChild(canvas);
-
 			document.addEventListener("mousedown", click);
 
 			if(!mobile)
@@ -527,6 +573,10 @@
 			{
 				record = 0;
 			}
+
+			document.addEventListener("DOMContentLoaded", function(event) { 
+				ground.prepair();
+			});
 
 			run();
 		}
@@ -599,9 +649,10 @@
 				menu_title.className = "hidden";
 				score.className = "";
 				record_panel.className = "";
+
+				ground.draw();
 			}
 
-			chao.draw();
 		}
 
 		main();
