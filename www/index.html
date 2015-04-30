@@ -14,32 +14,9 @@
 	<script type="text/javascript" src="cordova.js"></script>
 	<script type="text/javascript" src="js/index.js"></script>
 
-	<title>Jogo HTML</title>
+	<title>Eremita</title>
 
 	<style>
-
-		body
-		{
-			font-size: 50px;
-			font-weight: bold;
-			font-family: Comic Sans MS;
-			-webkit-text-stroke: 1px black;
-			color: white;
-			text-shadow:
-			3px 3px 0 #000,
-			-1px -1px 0 #000,
-			1px -1px 0 #000,
-			-1px 1px 0 #000,
-			1px 1px 0 #000;
-			overflow: hidden;
-			-webkit-user-select: none;  /* Chrome all / Safari all */
-			-moz-user-select: none;     /* Firefox all */
-			-ms-user-select: none;      /* IE 10+ */
-			-o-user-select: none;
-			user-select: none;
-			user-drag: none;
-
-		}
 
 		div
 		{
@@ -53,168 +30,85 @@
 			user-drag: none;
 		}
 
-		p
-		{
-			text-align: center;
-		}
-
-/*
-		html 
-		{
-  			background: url(assets/img/mountains.gif) no-repeat center center fixed; 
-			-webkit-background-size: cover;
-			-moz-background-size: cover;
-			-o-background-size: cover;
-			background-size: cover;
-		}
-*/
-		#background
-		{
-			z-index: 1;
-			width: 100%;
-			height: 100%;
-			position: fixed;
-		}
-
-		#context
-		{
-			top: 0px;
-			bottom: 0px;
-			left: 0px;
-			right: 0px;
-			width: 1200px;
-			height: 600px;
-			margin: auto;
-		}
-
-		#personagem
-		{
-			top: 10px;
-			left: 50px;
-			z-index: 5;
-		}
-		#obstaculos
-		{
-			z-index: 2;
-			position: absolute;
-			clip: rect(0px, 1200px, 550px, 0px);
-		}
-
-		#ground
-		{
-			z-index: 2;
-			top: 565px;
-			bottom: 0px;
-			left: 0px;
-			right: 0px;
-			width: 100%;
-			height: 300px;
-			margin: auto;
-		}
-
-		#menu_title
-		{
-			top: 0px;
-			bottom: 150px;
-			left: 0px;
-			right: 0px;
-			width: 800px;
-			height: 140px;
-			margin: auto;
-			text-align: center;
-		}
-		
-		#menu
-		{
-			text-align: center;
-			top: 0px;
-			bottom: 0px;
-			left: 0px;
-			right: 0px;
-			width: 250px;
-			height: 100px;
-			margin: auto;
-			border: solid 1px #000000;
-			cursor: pointer;
-		}
-
-		#score
-		{
-			top: 10px;
-			left: 50px;
-		}
-
-		#record_panel
-		{
-			top: 10px;
-			right: 50px;
-		}
-
-		.hidden
-		{
-			display: none;
-		}
-
-		.play
-		{
-			background: #99BEE5;
-		}
-
-		.lose
-		{
-			background: #FFADAD;
-		}
-
-		.menu_info
-		{
-			margin-top: 10px;
-			width: 250px;
-		}
-
 	</style>
 
 </head>
-<body>
-	<img src="assets/img/mountains.gif" alt="" id="background">
-	<div id="context">
-		<div id="test" style="top: 10px; left: 900px;"></div>
-		<div id="score" class="hidden"></div>
-		<div id="record_panel" class="hidden"></div>
-		<div id="menu_title"></div>
-		<div id="menu"></div>
-		<div id="personagem">
-			<img id="personagem_parado" src="assets/img/eremita_parado.png" width="72" height="103">
-			<img id="personagem_andando" src="assets/img/eremita_andando.gif" width="72" height="100" class="hidden">
-			<img id="personagem_pulando" src="assets/img/eremita_pulando.png" width="72" height="100" class="hidden">
-		</div>
+<body style="font-size: 40px;
+			font-weight: bold;
+			font-family: Comic Sans MS;
+			-webkit-text-stroke: 1px black;
+			color: white;
+			text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+			overflow: hidden;
+			-webkit-user-select: none;  /* Chrome all / Safari all */
+			-moz-user-select: none;     /* Firefox all */
+			-ms-user-select: none;      /* IE 10+ */
+			-o-user-select: none;
+			user-select: none;
+			user-drag: none;">
 
-		<div id="obstaculos">
-			
-		</div>
+	<div id="test" style="top: 10px; left: 900px;"></div>
+		
+	<!-- Background img -->
+	<img src="assets/img/mountains.gif" id="background" style="z-index: 1; width: 100%; height: 100%; position: fixed;">
 
-		<div id="iceberg" class="hidden">
-			<img id="iceberg1" src="assets/img/iceberg1.gif" width="100" height="321">
-			<img id="iceberg2" src="assets/img/iceberg2.gif" width="100" height="215">
-			<img id="iceberg3" src="assets/img/iceberg3.gif" width="100" height="273">
-		</div>
+	<!-- Score -->
+	<div id="score" style="top: 20px; left: 50px; display: none; font-size: 30px;"></div>
 
-		<audio controls loop hidden id="musica"><source src="assets/sound/05-mb-stage-theme-2.mp3" type="audio/mpeg"></audio>
-		<audio controls hidden id="jump"><source src="assets/sound/mario-jump-sound.mp3" type="audio/mpeg"></audio>
-		<audio controls hidden id="die"><source src="assets/sound/player-down.mp3" type="audio/mpeg"></audio>
+	<!-- Record -->
+	<div id="record_panel" style="top: 20px; right: 50px; display: none; font-size: 30px;"></div>
 
-		<div style="display:none;">
-			<img id="ground_blue" src="assets/img/chao_azul.gif"style="position: absolute; width: 32px; height: 64px" >
-		</div>
+
+	<!-- Menu -->
+	<div id="menu" style="top: 50px; width: 100%; height: 400px; text-align: center; margin: 0 auto;">
+		<span id="menu_title" style="text-align: center;"></span>
+		<div id="menu_content" style="top: 0px; bottom: 0px; left: 0px; right: 0px; margin: auto; width: 250px; height: 100px; border: solid 1px #000000; cursor: pointer; padding-top: 30px;"></div>
 	</div>
-	<div id="ground" style="height: 64px"></div>
-<script>
+
+	<!-- Context -->
+	<div id="context" style="top: 0px; bottom: 0px; left: 0px; right: 0px; width: 1200px; height: 600px; margin: auto;">
+
+		<!-- Obstacles -->
+		<div id="obstaculos" style="z-index: 2; position: absolute; clip: rect(0px, 1200px, 550px, 0px);"></div>
+		<span id="iceberg" style="display: none;">
+			<img id="iceberg1" src="assets/img/iceberg1.gif" style="width: 100px; height: 321px;">
+			<img id="iceberg2" src="assets/img/iceberg2.gif" style="width: 100px; height: 215px;">
+			<img id="iceberg3" src="assets/img/iceberg3.gif" style="width: 100px; height: 273px;">
+		</span>
+
+		<!-- Character -->
+		<div id="personagem" style="left: 50px; z-index: 5;">
+			<img id="personagem_parado" src="assets/img/eremita_parado.png" style="width: 72px; height: 100px;">
+			<img id="personagem_andando" src="assets/img/eremita_andando.gif" style="display: none; width: 72px; height: 100px;">
+			<img id="personagem_pulando" src="assets/img/eremita_pulando.png" style="display: none; width: 72px; height: 100px;">
+		</div>
+
+	</div>
+
+	<!-- Ground -->
+	<div id="ground" style="z-index: 2; height: 64px; top: 565px; bottom: 0px; left: 0px; right: 0px; width: 100%; margin: auto; overflow: hidden;"></div>
+	<span style="display:none;">
+		<img id="ground_blue" src="assets/img/chao_azul.gif">
+	</span>
+
+	<!-- Audios -->
+	<audio controls loop hidden id="musica"><source src="assets/sound/05-mb-stage-theme-2.mp3" type="audio/mpeg"></audio>
+	<audio controls hidden id="jump"><source src="assets/sound/mario-jump-sound.mp3" type="audio/mpeg"></audio>
+	<audio controls hidden id="die"><source src="assets/sound/player-down.mp3" type="audio/mpeg"></audio>
+
+<script> 
 //document.getElementById('test').innerHTML = this.andando;
-		var ALTURA, LARGURA, LARGURA_TOTAL, frames = 0, maxJump = 3, mobile = true, 
-		velocidade = (mobile) ? 60 : 25,
+		var ALTURA = 600, LARGURA = window.innerWidth, 
+		MOBILE = false, 
+		velocidade = (MOBILE) ? 60 : 25,
+		maxJump = 3, 
 		currentState, record,
+		canvas = document.getElementById('context'),
+		chao = document.getElementById('ground'),
 		score = document.getElementById('score'),
 		record_panel = document.getElementById('record_panel'),
 		menu_title = document.getElementById('menu_title'),
+		menu_content = document.getElementById('menu_content'),
 		menu = document.getElementById('menu'),
 
 		state =
@@ -255,15 +149,15 @@
 		{
 			div: document.getElementById('ground'),
 			img: document.getElementById('ground_blue'),
-			y: 550,
 			altura: 50,
+			y: ALTURA - 50,
 			count: 0,
 			left: false,
 
 			prepair: function()
 			{
-				LARGURA_TOTAL
-				for (var i = 0; i < LARGURA_TOTAL + 32; i += 32)
+				LARGURA
+				for (var i = 0; i < LARGURA; i += 32)
 				{
 					img = this.img.cloneNode();
 					img.style.left = i + "px";
@@ -275,10 +169,10 @@
 			{
 				while (true)
 				{
-					for (var i = 0; i < LARGURA_TOTAL + 32; i++) {
+					for (var i = 0; i < LARGURA + 32; i++) {
 						this.div.style.left = i + "px";
 					};
-					for (var i = LARGURA_TOTAL - 1; i >= 0; i--) {
+					for (var i = LARGURA - 1; i >= 0; i--) {
 						this.div.style.left = i + "px";
 					};
 				}
@@ -288,56 +182,8 @@
 			draw: function()
 			{
 				this.left = !this.left;
-				this.count = (this.left) ? - 4: 4;
+				this.count = (this.left) ? - 5 : 5;
 				this.div.style.left = this.count +  "px";
-				// if(this.count <= - 32)
-				// {
-				// 	this.div.style.left = this.count +  "px";
-				// 	//img = this.img.cloneNode();
-				// 	//img.style.left = LARGURA_TOTAL + -this.count + "px";
-				// 	//this.div.appendChild(img);
-
-				// 	//this.div.removeChild(this.div.firstChild);
-
-				// }
-				// else()
-				// this.div.style.left = this.count +  "px";
-				/*
-				if(this.count == 32)
-				{
-					this.count = 0;
-					this.div.removeChild(this.div.lastChild);
-
-					img.style.left = LARGURA_TOTAL + 32 + "px";
-					this.div.appendChild(img);
-
-				}
-				this.count += 16;
-*/
-				/*
-				
-				// 
-				var i = 0;
-				while(i < LARGURA_TOTAL + this.count)
-				{
-
-					
-//					ctx.drawImage(, i - this.count, this.y);
-					//this.images[Math.floor(3 * Math.random())].cloneNode()
-
-
-						obs.image.className = "";
-						obs.image.style.position = "absolute";
-						this.obstaculos.appendChild(obs.image);
-					}
-
-					obs.image.style.left = (obs.x - 30) + "px";
-					obs.image.style.top = (ground.y - obs.altura) + "px";
-
-
-					i += 32;
-				}
-				*/
 			}
 
 		},
@@ -350,11 +196,11 @@
 			pulando: document.getElementById('personagem_pulando'),
 			x: 50,
 			y: 0,
-			altura: 100,
+			altura: 96,
 			largura: 55,
-			gravidade: (mobile) ? 7 : 2.5,
+			gravidade: (MOBILE) ? 7 : 2.5,
 			velocidade: 0,
-			forcaPulo: (mobile) ? 39 : 24.6,
+			forcaPulo: (MOBILE) ? 39 : 24.6,
 			quantJump: 0,
 			movimento: false,
 			score: 0,
@@ -377,7 +223,7 @@
 
 					if(this.y >= ground.y - obstaculos.altura - this.altura)
 					{
-						this.altura = 99;
+						this.altura = 96;
 						this.largura = 55;
 						this.y = ground.y - obstaculos.altura - this.altura;
 						this.quantJump = 0;
@@ -400,9 +246,9 @@
 
 			changeStatus: function(option)
 			{
-				this.pulando.className = (option == "pulando") ? "" : "hidden";
-				this.andando.className = (option == "andando") ? "" : "hidden";
-				this.parado.className  = (option == "parado") ? "" : "hidden";
+				this.pulando.style.display = (option == "pulando") ? "" : "none";
+				this.andando.style.display = (option == "andando") ? "" : "none";
+				this.parado.style.display  = (option == "parado") ? "" : "none";
 			},
 
 			jump: function()
@@ -446,6 +292,7 @@
 			insertTime: 0,
 			passou: false,
 			altura: 0,
+			distancia: parseInt(15 / (LARGURA / 1000)),
 
 			insert: function()
 			{
@@ -457,9 +304,7 @@
 					insert: true,
 				});
 
-				//this.insertTime = 20 + Math.floor(21 * Math.random());
-				distancia = (mobile) ? 8 : 20;
-				this.insertTime = distancia + Math.floor(21 * Math.random());
+				this.insertTime = this.distancia + Math.floor(21 * Math.random());
 			},
 
 			update: function()
@@ -540,11 +385,9 @@
 			else if (currentState == state.play) 
 			{
 				personagem.changeStatus("andando");
-
 				currentState = state.playing;
 				
 				sound.music.play();
-				menu.className = "hidden";
 			}
 			else if (currentState == state.lose)
 			{
@@ -569,19 +412,22 @@
 
 		function main()
 		{
-			LARGURA_TOTAL = window.innerWidth;
-			LARGURA = 1200;
-			ALTURA = 600;
+
+			if(window.innerHeight < ALTURA)
+			{
+				context.style.top = -(ALTURA - window.innerHeight) + "px";
+				chao.style.top = (ALTURA - ground.altura - (ALTURA - window.innerHeight)) + "px";
+			}
 			
+
 			document.addEventListener("mousedown", click);
 
-			if(!mobile)
+			if(!MOBILE)
 			{
 				document.addEventListener("keydown", clickSpace, false);				
 			}
 
 			sound.configure();
-			
 			currentState = state.play;
 
 			record = localStorage.getItem("record");
@@ -591,9 +437,7 @@
 				record = 0;
 			}
 
-			document.addEventListener("DOMContentLoaded", function(event) { 
-				ground.prepair();
-			});
+			ground.prepair();
 
 			run();
 		}
@@ -601,77 +445,54 @@
 		function run()
 		{
 			update();
-			draw();
+			
+			window.requestAnimationFrame(run);
 
-			// setTimeout(function()
-			// {
-				window.requestAnimationFrame(run);
-			// }, 4);
 		}
 		
 		function update()
 		{
-			frames++;
 			personagem.update();
-
-			if(currentState == state.playing)
-			{
-				obstaculos.update();
-			}
-		}
-		
-		function draw()
-		{
-			score.innerHTML = "<small>Score: </small>" + personagem.score;
-			record_panel.innerHTML = "<small>Record: </small>" + record;
 
 			if(currentState == state.play)
 			{
-				
-				frames = 0;
-			
 				personagem.changeStatus("parado");
 
+				menu.style.display = "";
 				menu_title.innerHTML = "O Eremita Do Iceberg";
-				menu_title.className = "";
-
-				menu.innerHTML = "<div class=\"menu_info\">\> Play!</div>";
-				menu.className = "play";
+				
+				menu_content.innerHTML = "\> Play!";
+				menu_content.style.background = "#99BEE5";
 
 			}
 			else if (currentState == state.lose)
 			{
 
-				score.className = "hidden";
-				record_panel.className = "hidden";
+				score.style.display = "none";
+				record_panel.style.display = "none";
 
-				if (personagem.score > record)
-				{
-					text_record = "Novo Record!";
-				}
-				else
-				{
-					text_record = "Record " + record;
-				}
-
-				menu_title.innerHTML = text_record;
-				menu_title.className = "";
-
-				menu.innerHTML = "<div class=\"menu_info\">" + personagem.score + "</div>";
-				menu.className = "lose";
-
+				menu.style.display = "";
+				menu_title.innerHTML = (personagem.score > record) ? "Novo Record!" : "Record " + record;
+				
+				menu_content.innerHTML = personagem.score;
+				menu_content.style.background = "#FFADAD";
 			}
 			else if (currentState == state.playing)
 			{
-				menu_title.className = "hidden";
-				score.className = "";
-				record_panel.className = "";
+				menu.style.display = "none";
 
+				score.innerHTML = "<small>Score: </small>" + personagem.score;
+				score.style.display = "";
+
+				record_panel.innerHTML = "<small>Record: </small>" + record;
+				record_panel.style.display = "";
+				
 				ground.draw();
+				obstaculos.update();
 			}
 
 		}
-
+		
 		main();
 	</script>
 </body>
